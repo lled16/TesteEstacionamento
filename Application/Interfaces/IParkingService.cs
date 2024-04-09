@@ -19,7 +19,7 @@ namespace Application.Interfaces
         ParkResult Park(ParkingSpotType parkingSpotType, string licensePlate);
         RemovePark RemovePark(string licensePlate);
         List<LicensesPlates> ReturnLicensesPlates();
-        RemovePark ClearPark();
+        string ClearPark();
         bool ValidLicensePlate(string licensePlate);
     }
 }

@@ -74,8 +74,15 @@ namespace ParkingApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("VerificarPlacasEstacionadas", Name = "GetLicensesPlates")]
-        public IActionResult GetLicensesPlates() =>
-            Ok(_parkingService.ReturnLicensesPlates());
+        public IActionResult GetLicensesPlates()
+        {
+            List<LicensesPlates> licensesPlates = _parkingService.ReturnLicensesPlates();
+            if (licensesPlates.Any())
+                return Ok(_parkingService.ReturnLicensesPlates());
+            else
+                return NoContent();
+
+        }
 
         /// <summary>
         /// Realiza a inserção de um veículo em uma vaga

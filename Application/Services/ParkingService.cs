@@ -212,7 +212,7 @@ namespace Application.Services
             }
         }
 
-        public RemovePark ClearPark()
+        public string ClearPark()
         {
             Parallel.ForEach(parkingSpot, parkingSpot =>
             {
@@ -220,7 +220,7 @@ namespace Application.Services
                 parkingSpot.LicensePlate = null;
             });
 
-            return new RemovePark() { Removed = true, Message = "Estacionamento limpo  com sucesso !" };
+            return  "Estacionamento limpo  com sucesso !";
         }
 
         public List<LicensesPlates> ReturnLicensesPlates()
