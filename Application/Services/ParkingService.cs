@@ -51,8 +51,7 @@ namespace Application.Services
 
             int countAmountVansInCarSpots = parkingSpot.Where(p => p.IsOccupied is true &&
                                                                p.Type is ParkingSpotType.Car &&
-                                                               p.TypeVehicle is ParkingSpotType.BigSpot)
-                                                               .Count() / numberSpotsVansOcupiedInCarSpots;
+                                                               p.TypeVehicle is ParkingSpotType.BigSpot).Count() / numberSpotsVansOcupiedInCarSpots;
 
             return countAmopuntVansInBigSpots + countAmountVansInCarSpots;
 
