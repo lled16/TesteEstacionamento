@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingApi", "ParkingApi\ParkingApi.csproj", "{82CBA774-57EC-4103-9CF0-1FE027390CE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParkingApi", "ParkingApi\ParkingApi.csproj", "{82CBA774-57EC-4103-9CF0-1FE027390CE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{1631B46F-9CDC-44F3-85F3-C65E19183AF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{1631B46F-9CDC-44F3-85F3-C65E19183AF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{795CDA93-3D38-405D-BB3A-84CE7F73CEC0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{9E3F8046-65E5-4791-A7E3-3E07EBAB5D27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{9E3F8046-65E5-4791-A7E3-3E07EBAB5D27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{1631B46F-9CDC-44F3-85F3-C65E19183AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1631B46F-9CDC-44F3-85F3-C65E19183AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1631B46F-9CDC-44F3-85F3-C65E19183AF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{795CDA93-3D38-405D-BB3A-84CE7F73CEC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{795CDA93-3D38-405D-BB3A-84CE7F73CEC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{795CDA93-3D38-405D-BB3A-84CE7F73CEC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{795CDA93-3D38-405D-BB3A-84CE7F73CEC0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E3F8046-65E5-4791-A7E3-3E07EBAB5D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E3F8046-65E5-4791-A7E3-3E07EBAB5D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E3F8046-65E5-4791-A7E3-3E07EBAB5D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
