@@ -43,3 +43,16 @@ Realiza a inserção do veículo na respectiva vaga, verificando se o mesmo já 
 ![swagger](https://github.com/lled16/TesteEstacionamento/assets/32556098/725a9452-339a-47bb-beae-b6bfa082d000)
 
 
+---
+Arquitetura
+---
+# Application
+Esta camada está responsável pela lógica e definição da interface, realizando toda a manipulação das informações
+
+# Domain
+Esta camada está responsável pelo mapeamento das entidades e criação de enums
+
+#Api
+Esta camada está responsável por expor todas as rotas para visualização e utilização do cliente, onde a controller está definida.
+
+
