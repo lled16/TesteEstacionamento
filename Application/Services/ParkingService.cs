@@ -132,7 +132,7 @@ namespace Application.Services
 
             Parallel.ForEach(licensesDistinct, licenses =>
             {
-                LicensesPlates plates = new LicensesPlates() { Id = licenses.Id, LicensePlate = licenses.LicensePlate };
+                LicensesPlates plates = new LicensesPlates() { Id = licenses.Id, LicensePlate = licenses.LicensePlate, TypeVehicle = licenses.TypeVehicle.ToString() };
                 licensesPlates.Add(plates);
             });
 
