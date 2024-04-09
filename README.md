@@ -42,8 +42,6 @@ Realiza a inserção do veículo na respectiva vaga, verificando se o mesmo já 
 
 ![swagger](https://github.com/lled16/TesteEstacionamento/assets/32556098/725a9452-339a-47bb-beae-b6bfa082d000)
 
-
----
 # Arquitetura
 ---
 ## Application
