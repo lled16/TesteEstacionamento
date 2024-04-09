@@ -38,12 +38,10 @@ Realiza a inserção do veículo na respectiva vaga, verificando se o mesmo já 
  #### **Para agilizar a entrega, não houve implementação da camada Infrastructure, bem como conexão com banco ou EF.**
 
 
-## Swagger
-
+# Swagger
 ![swagger](https://github.com/lled16/TesteEstacionamento/assets/32556098/725a9452-339a-47bb-beae-b6bfa082d000)
 
 # Arquitetura
----
 ## Application
 Esta camada está responsável pela lógica e definição da interface, realizando toda a manipulação das informações
 
