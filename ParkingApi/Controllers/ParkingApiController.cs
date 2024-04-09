@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,33 +16,41 @@ namespace ParkingApi.Controllers
             _logger = logger;
             _parkingService = parkingService;
         }
-
+        /// <summary>
+        /// Retorna a quantidade de vagas vazias
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("ObterNumeroVagasVazias", Name = "GetEmptySpots")]
-        public IActionResult GetEmptySpots()
-        {
-            return Ok(_parkingService.GetEmptySpots());
-        }
-
-        [HttpGet("ObterNumeroDeVagasTotal", Name = "GetTotalVacancy")]
-        public IActionResult GetTotalSpots()
-        {
-            return Ok(_parkingService.GetTotalSpots());
-        }
-
-        [HttpGet("VerificarEstacionamentoCheio", Name = "VerifyFullParkingLot")]
-        public IActionResult VerifyFullParkingLot()
-        {
-            return Ok(_parkingService.VerifyFullParkingLot());
-        }
-
-        [HttpGet("VerificarEstacionamentoVazio", Name = "VerifyEmptyParkingLot")]
-        public IActionResult VerifyEmptyParkingLot()
-        {
-            return Ok(_parkingService.VerifyEmptyParkingLot());
-        }
+        public IActionResult GetEmptySpots() =>
+            Ok(_parkingService.GetEmptySpots());
 
         /// <summary>
-        /// 0 = MOTO | 1 = CARRO | 2 = VANS OU VEÍCULOS GRANDES
+        /// Retorna a quantidade de vagas total no estacionamento
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("ObterNumeroDeVagasTotal", Name = "GetTotalVacancy")]
+        public IActionResult GetTotalSpots() =>
+            Ok(_parkingService.GetTotalSpots());
+
+        /// <summary>
+        /// Verifica se o estacionamento está totalmente cheio
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("VerificarEstacionamentoCheio", Name = "VerifyFullParkingLot")]
+        public IActionResult VerifyFullParkingLot() =>
+            Ok(_parkingService.VerifyFullParkingLot());
+
+        /// <summary>
+        /// Verifica se o estacionamentoe está totalmente vazio
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("VerificarEstacionamentoVazio", Name = "VerifyEmptyParkingLot")]
+        public IActionResult VerifyEmptyParkingLot() =>
+            Ok(_parkingService.VerifyEmptyParkingLot());
+
+
+        /// <summary>
+        /// Verifica se todas as vagas de um determinado tipo estão preenchidas
         /// </summary>
         /// <param name="tipoVaga"></param>
         /// <returns></returns>
@@ -49,20 +58,30 @@ namespace ParkingApi.Controllers
         /// <b>0 = MOTO | 1 = CARRO | 2 = VANS OU VEÍCULOS GRANDES</b>
         /// </remarks>
         [HttpGet("VerificarVagasCheiasPorTipo", Name = "VerifyFullGroupType")]
-        public IActionResult VerifyFullGroupType(ParkingSpotType tipoVaga)
-        {
-            return Ok(_parkingService.VerifyFullGroupType(tipoVaga));
-        }
+        public IActionResult VerifyFullGroupType(ParkingSpotType tipoVaga) =>
+             Ok(_parkingService.VerifyFullGroupType(tipoVaga));
 
-        [HttpGet("VerificarQuantidaVagasVansOcupam", Name = "VerifyAmountOfVans")]
-        public IActionResult VerifyAmountOfVans()
-        {
-            return Ok(_parkingService.VerifyAmountOfVans());
-        }
         /// <summary>
-        /// 0 = MOTO | 1 = CARRO | 2 = VANS OU VEÍCULOS GRANDES
+        /// Verificar quantidade de vagas as vans estão ocupando
         /// </summary>
-        /// <param name="tipoVaga"></param>
+        /// <returns></returns>
+        [HttpGet("VerificarQuantidaVagasVansOcupam", Name = "VerifyAmountOfVans")]
+        public IActionResult VerifyAmountOfVans() =>
+            Ok(_parkingService.VerifyAmountOfVans());
+
+        /// <summary>
+        /// Verificar Placas Estacionadas
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("VerificarPlacasEstacionadas", Name = "GetLicensesPlates")]
+        public IActionResult GetLicensesPlates() =>
+            Ok(_parkingService.ReturnLicensesPlates());
+
+        /// <summary>
+        /// Realiza a inserção de um veículo em uma vaga
+        /// </summary>
+        /// <param name="tipoVeículo"></param>
+        /// <param name="placaVeiculo"></param>
         /// <returns></returns>
         /// <remarks>
         /// <b>0 = MOTO | 1 = CARRO | 2 = VANS OU VEÍCULOS GRANDES</b>
@@ -70,19 +89,21 @@ namespace ParkingApi.Controllers
         [HttpPost("EstacionarVeículos", Name = "Park")]
         public IActionResult Park(ParkingSpotType tipoVeículo, string placaVeiculo)
         {
-            bool parkVehicle = _parkingService.Park(tipoVeículo, placaVeiculo);
+            ParkResult resultPark = new();
 
-            if (parkVehicle is true)
-            {
-                return Ok("Veículo estacionado com sucesso !");
-            }
+            if (_parkingService.ValidLicensePlate(placaVeiculo))
+                resultPark = _parkingService.Park(tipoVeículo, placaVeiculo);
             else
-            {
-                return Ok("Veículo não pôde ser estacionado, possíveis vagas já se encontram preenchidas !");
-            }
+                return BadRequest("Placa digitada fora do padrão comum ou mercosul !");
+
+            if (resultPark.Parked)
+                return Ok(resultPark);
+            else
+                return BadRequest(resultPark);
         }
+
         /// <summary>
-        /// Digite a placa. EX : AAA-1111
+        /// Remove um determinado carro de uma vaga pela placa
         /// </summary>
         /// <param name="placaVeiculo"></param>
         /// <returns></returns>
@@ -90,18 +111,16 @@ namespace ParkingApi.Controllers
         /// <b>Digite a placa. EX : AAA-1111</b>
         /// </remarks>
         [HttpPost("RemoverVeículos", Name = "RemovePark")]
-        public IActionResult RemovePark(string placaVeiculo)
-        {
-            bool parkVehicle = _parkingService.RemovePark(placaVeiculo);
+        public IActionResult RemovePark(string placaVeiculo) =>
+            _parkingService.ValidLicensePlate(placaVeiculo) is true ? Ok(_parkingService.RemovePark(placaVeiculo)) : BadRequest("Placa digitada fora do padrão comum ou mercosul !");
 
-            if (parkVehicle is true)
-            {
-                return Ok("Veículo removido com sucesso !");
-            }
-            else
-            {
-                return Ok("Veículo não pôde ser removido, consulte a placa digitada !");
-            }
-        }
+        /// <summary>
+        /// Limpar estacionamento, removendo todos os veículos.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("LimparEstacionamento", Name = "ClearPark")]
+        public IActionResult ClearPark() =>
+             Ok(_parkingService.ClearPark());
+
     }
 }

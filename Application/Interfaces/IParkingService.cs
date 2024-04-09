@@ -16,7 +16,10 @@ namespace Application.Interfaces
         public bool VerifyEmptyParkingLot();
         public bool VerifyFullGroupType(ParkingSpotType parkingSpotType);
         public int VerifyAmountOfVans();
-        bool Park(ParkingSpotType parkingSpotType, string licensePlate);
-        bool RemovePark(string licensePlate);
+        ParkResult Park(ParkingSpotType parkingSpotType, string licensePlate);
+        RemovePark RemovePark(string licensePlate);
+        List<LicensesPlates> ReturnLicensesPlates();
+        RemovePark ClearPark();
+        bool ValidLicensePlate(string licensePlate);
     }
 }

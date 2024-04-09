@@ -1,12 +1,8 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+
 
 namespace Application.Services
 {
@@ -28,9 +24,7 @@ namespace Application.Services
             foreach (var parking in parkingSpot)
             {
                 if (!parking.IsOccupied)
-                {
                     return false;
-                }
             }
             return true;
         }
@@ -39,9 +33,7 @@ namespace Application.Services
             foreach (var parking in parkingSpot)
             {
                 if (parking.IsOccupied)
-                {
                     return false;
-                }
             }
             return true;
         }
@@ -54,103 +46,131 @@ namespace Application.Services
         public int VerifyAmountOfVans()
         {
             int countAmopuntVansInBigSpots = parkingSpot.Where(p => p.IsOccupied is true &&
-                                                               p.Type == ParkingSpotType.BigSpot &&
-                                                               p.TypeVehicle == ParkingSpotType.BigSpot).Count();
+                                                               p.Type is ParkingSpotType.BigSpot &&
+                                                               p.TypeVehicle is ParkingSpotType.BigSpot).Count();
 
             int countAmountVansInCarSpots = parkingSpot.Where(p => p.IsOccupied is true &&
-                                                               p.Type == ParkingSpotType.Car &&
-                                                               p.TypeVehicle == ParkingSpotType.BigSpot)
+                                                               p.Type is ParkingSpotType.Car &&
+                                                               p.TypeVehicle is ParkingSpotType.BigSpot)
                                                                .Count() / numberSpotsVansOcupiedInCarSpots;
 
             return countAmopuntVansInBigSpots + countAmountVansInCarSpots;
 
         }
 
-
-        public bool Park(ParkingSpotType parkingSpotType, string licensePlate)
+        public ParkResult Park(ParkingSpotType parkingSpotType, string licensePlate)
         {
-            int countEmptySpotsBike = parkingSpot.Where(p => p.IsOccupied is false &&
-                                                               p.Type == ParkingSpotType.Bike).Count();
+            ParkResult parkResult = new();
 
-            int countEmptySpotsCar = parkingSpot.Where(p => p.IsOccupied is false &&
-                                                               p.Type == ParkingSpotType.Car).Count();
+            int countDuplicatedLicensePlate = parkingSpot.Where(p => p.IsOccupied && p.LicensePlate == licensePlate).Count();
 
-            int countEmptySpotsBigSpot = parkingSpot.Where(p => p.IsOccupied is false &&
-                                                               p.Type == ParkingSpotType.BigSpot).Count();
+            if (countDuplicatedLicensePlate > 0)
+            {
+                parkResult.Parked = false;
+                parkResult.Message = "Veículo já se encontra estacionado !";
+
+                return parkResult;
+            }
+
+            int countEmptySpotsBike = parkingSpot.Where(p => p.IsOccupied is false && p.Type is ParkingSpotType.Bike).Count();
+
+            int countEmptySpotsCar = parkingSpot.Where(p => p.IsOccupied is false && p.Type is ParkingSpotType.Car).Count();
+
+            int countEmptySpotsBigSpot = parkingSpot.Where(p => p.IsOccupied is false && p.Type is ParkingSpotType.BigSpot).Count();
 
             int positionFree = 0;
 
-            if (parkingSpotType == ParkingSpotType.Bike)
+            if (parkingSpotType is ParkingSpotType.Bike)
             {
                 if (countEmptySpotsBike > 0)
                 {
-                    positionFree = parkingSpot.FirstOrDefault(p => p.IsOccupied is false && p.Type == ParkingSpotType.Bike).Id;
+                    positionFree = parkingSpot.First(p => p.IsOccupied is false && p.Type == ParkingSpotType.Bike).Id;
 
                     parkingSpot[positionFree].IsOccupied = true;
                     parkingSpot[positionFree].TypeVehicle = parkingSpotType;
                     parkingSpot[positionFree].LicensePlate = licensePlate;
 
-                    return true;
+                    parkResult.Parked = true;
+                    parkResult.Message = "Moto estacionada com sucesso em uma vaga de moto !";
+
+                    return parkResult;
                 }
                 else if (countEmptySpotsCar > 0)
                 {
-                    positionFree = parkingSpot.FirstOrDefault(p => p.IsOccupied is false && p.Type == ParkingSpotType.Car).Id;
+                    positionFree = parkingSpot.First(p => p.IsOccupied is false && p.Type == ParkingSpotType.Car).Id;
 
                     parkingSpot[positionFree].IsOccupied = true;
                     parkingSpot[positionFree].TypeVehicle = parkingSpotType;
                     parkingSpot[positionFree].LicensePlate = licensePlate;
 
-                    return true;
+                    parkResult.Parked = true;
+                    parkResult.Message = "Moto estacionada com sucesso em uma vaga de carro !";
+
+                    return parkResult;
                 }
                 else if (countEmptySpotsBigSpot > 0)
                 {
-                    positionFree = parkingSpot.FirstOrDefault(p => p.IsOccupied is false && p.Type == ParkingSpotType.BigSpot).Id;
+                    positionFree = parkingSpot.First(p => p.IsOccupied is false && p.Type == ParkingSpotType.BigSpot).Id;
 
                     parkingSpot[positionFree].IsOccupied = true;
                     parkingSpot[positionFree].TypeVehicle = parkingSpotType;
                     parkingSpot[positionFree].LicensePlate = licensePlate;
 
-                    return true;
+                    parkResult.Parked = true;
+                    parkResult.Message = "Moto estacionada com sucesso em uma vaga grande ou de van !";
+                }
+                else
+                {
+                    parkResult.Parked = false;
+                    parkResult.Message = "Não há vagas de motos, carros ou grandes disponíveis para estacionar !";
                 }
             }
-            else if (parkingSpotType == ParkingSpotType.Car)
+            else if (parkingSpotType is ParkingSpotType.Car)
             {
                 if (countEmptySpotsCar > 0)
                 {
-                    positionFree = parkingSpot.FirstOrDefault(p => p.IsOccupied is false && p.Type == ParkingSpotType.Car).Id;
+                    positionFree = parkingSpot.First(p => p.IsOccupied is false && p.Type == ParkingSpotType.Car).Id;
 
                     parkingSpot[positionFree].IsOccupied = true;
                     parkingSpot[positionFree].TypeVehicle = parkingSpotType;
                     parkingSpot[positionFree].LicensePlate = licensePlate;
 
-                    return true;
+                    parkResult.Parked = true;
+                    parkResult.Message = "Carro estacionado com sucesso em uma vaga de carro !";
                 }
                 else if (countEmptySpotsBigSpot > 0)
                 {
-                    positionFree = parkingSpot.FirstOrDefault(p => p.IsOccupied is false && p.Type == ParkingSpotType.BigSpot).Id;
+                    positionFree = parkingSpot.First(p => p.IsOccupied is false && p.Type == ParkingSpotType.BigSpot).Id;
 
                     parkingSpot[positionFree].IsOccupied = true;
                     parkingSpot[positionFree].TypeVehicle = parkingSpotType;
                     parkingSpot[positionFree].LicensePlate = licensePlate;
 
-                    return true;
+                    parkResult.Parked = true;
+                    parkResult.Message = "Carro estacionado com sucesso em uma vaga grande ou de van !";
+                }
+                else
+                {
+                    parkResult.Parked = false;
+                    parkResult.Message = "Não há vagas de carro ou grandes disponíveis para estacionar !";
                 }
             }
-            else if (parkingSpotType == ParkingSpotType.BigSpot)
+            else if (parkingSpotType is ParkingSpotType.BigSpot)
             {
                 if (countEmptySpotsBigSpot > 0)
                 {
-                    positionFree = parkingSpot.FirstOrDefault(p => p.IsOccupied is false && p.Type == ParkingSpotType.BigSpot).Id;
+                    positionFree = parkingSpot.First(p => p.IsOccupied is false && p.Type == ParkingSpotType.BigSpot).Id;
 
                     parkingSpot[positionFree].IsOccupied = true;
                     parkingSpot[positionFree].TypeVehicle = parkingSpotType;
                     parkingSpot[positionFree].LicensePlate = licensePlate;
 
-                    return true;
+                    parkResult.Parked = true;
+                    parkResult.Message = "Van estacionado com sucesso em uma vaga grande ou de van !";
                 }
                 else if (countEmptySpotsCar >= numberSpotsVansOcupiedInCarSpots)
                 {
-                    positionFree = parkingSpot.FirstOrDefault(p => p.IsOccupied is false && p.Type == ParkingSpotType.Car).Id;
+                    positionFree = parkingSpot.First(p => p.IsOccupied is false && p.Type == ParkingSpotType.Car).Id;
 
                     for (int i = 0; i < numberSpotsVansOcupiedInCarSpots; i++)
                     {
@@ -160,51 +180,83 @@ namespace Application.Services
 
                     }
 
-                    return true;
+                    parkResult.Parked = true;
+                    parkResult.Message = "Van estacionado com sucesso ocupando 3 vagas de carro !";
+                }
+                else
+                {
+                    parkResult.Parked = false;
+                    parkResult.Message = "Não há vagas grandes ou 3 vagas de carro disponíveis para estacionar !";
                 }
             }
 
-            return false;
+            return parkResult;
         }
 
-        public bool RemovePark(string licensePlate)
+        public RemovePark RemovePark(string licensePlate)
         {
             try
             {
                 int positionPark = 0;
 
-                positionPark = parkingSpot.FirstOrDefault(p => p.IsOccupied is true && p.LicensePlate == licensePlate).Id;
+                positionPark = parkingSpot.First(p => p.IsOccupied is true && p.LicensePlate == licensePlate).Id;
 
-                ParkingSpot parkingSpotUpdate = new ParkingSpot()
-                {
-                    Id = positionPark,
-                    IsOccupied = false
-                };
+                parkingSpot[positionPark].IsOccupied = false;
+                parkingSpot[positionPark].LicensePlate = null;
 
-                if (positionPark <= 6)
-                {
-                    parkingSpotUpdate.Type = ParkingSpotType.Bike;
-                }
-                else if (positionPark > 6 && positionPark <= 13)
-                {
-                    parkingSpotUpdate.Type = ParkingSpotType.Car;
-                }
-                else if (positionPark > 13 && positionPark < 21)
-                {
-                    parkingSpotUpdate.Type = ParkingSpotType.BigSpot;
-                }
-
-                parkingSpot[positionPark] = parkingSpotUpdate;
-
-                return true;
+                return new RemovePark() { Removed = true, LicensePlate = licensePlate, Message = "Veículo retirado com sucesso !" };
             }
             catch
             {
-                return false;
+                return new RemovePark() { Removed = false, LicensePlate = licensePlate, Message = "Veículo não retirado, verifique a placa inserida. Em caso de dúvidas, verifique as placas estacionadas pela rota : VerificarPlacasEstacionadas !" };
             }
-
-
         }
 
+        public RemovePark ClearPark()
+        {
+            Parallel.ForEach(parkingSpot, parkingSpot =>
+            {
+                parkingSpot.IsOccupied = false;
+                parkingSpot.LicensePlate = null;
+            });
+
+            return new RemovePark() { Removed = true, Message = "Estacionamento limpo  com sucesso !" };
+        }
+
+        public List<LicensesPlates> ReturnLicensesPlates()
+        {
+            var licensesDistinct = parkingSpot.Where(p => p.IsOccupied).DistinctBy(x => x.LicensePlate).ToList();
+
+            List<LicensesPlates> licensesPlates = new();
+
+            Parallel.ForEach(licensesDistinct, licenses =>
+            {
+                LicensesPlates plates = new LicensesPlates() { Id = licenses.Id, LicensePlate = licenses.LicensePlate };
+                licensesPlates.Add(plates);
+            });
+
+            return licensesPlates;
+        }
+        public  bool ValidLicensePlate(string licensePlate)
+        {
+            if (string.IsNullOrWhiteSpace(licensePlate)) { return false; }
+
+            if (licensePlate.Length > 8) { return false; }
+
+            licensePlate = licensePlate.Replace("-", "").Trim();
+
+           
+            if (char.IsLetter(licensePlate, 4))
+            {
+               
+                var padraoMercosul = new Regex("[a-zA-Z]{3}[0-9]{1}[a-zA-Z]{1}[0-9]{2}");
+                return padraoMercosul.IsMatch(licensePlate);
+            }
+            else
+            {
+                var padraoNormal = new Regex("[a-zA-Z]{3}[0-9]{4}");
+                return padraoNormal.IsMatch(licensePlate);
+            }
+        }
     }
 }
