@@ -44,15 +44,15 @@ Realiza a inserção do veículo na respectiva vaga, verificando se o mesmo já 
 
 
 ---
-Arquitetura
+#Arquitetura
 ---
-# Application
+## Application
 Esta camada está responsável pela lógica e definição da interface, realizando toda a manipulação das informações
 
-# Domain
+## Domain
 Esta camada está responsável pelo mapeamento das entidades e criação de enums
 
-#Api
+## Api
 Esta camada está responsável por expor todas as rotas para visualização e utilização do cliente, onde a controller está definida.
 
 
