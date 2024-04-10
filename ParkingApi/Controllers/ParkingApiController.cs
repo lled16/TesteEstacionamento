@@ -91,7 +91,8 @@ namespace ParkingApi.Controllers
         /// <param name="placaVeiculo"></param>
         /// <returns></returns>
         /// <remarks>
-        /// <b>0 = MOTO | 1 = CARRO | 2 = VANS OU VEÍCULOS GRANDES</b>
+        /// <b>0 = MOTO | 1 = CARRO | 2 = VANS OU VEÍCULOS GRANDES</b></br>
+        /// 
         /// </remarks>
         [HttpPost("EstacionarVeículos", Name = "Park")]
         public IActionResult Park(ParkingSpotType tipoVeículo, string placaVeiculo)
